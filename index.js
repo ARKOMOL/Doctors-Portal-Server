@@ -54,9 +54,21 @@ async function run(){
 
         /* all users */
 
-        app.get('/user',async(req,res)=>{
+        app.get('/user',verifyJWT,async(req,res)=>{
           const users = await usersCollection.find().toArray();
-          res.send(user)
+          res.send(users)
+        });
+
+        app.put('/user/admin/:email', verifyJWT, async (req,res)=>{
+          const email = req.params.email;
+          const requester = req.decoded.email;
+          
+          const filter = {email: email};
+          const updateDoc = {
+            $set: {role: 'admin'},
+          };
+          const result = await usersCollection.updateOne(filter,updateDoc);
+          res.send(result);
         })
 
 
